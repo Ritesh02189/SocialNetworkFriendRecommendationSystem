@@ -28,8 +28,8 @@ public class GraphFriendSuggestion {
 
 
     public void loadGraph() {
-        String query = "SELECT user1_id, user2_id FROM friendships";
-        String query2 = "SELECT user1_id, user2_id FROM friendships where status = ?";
+        String query = "SELECT user_id, friend_id FROM friendships";
+        String query2 = "SELECT user_id, friend_id FROM friendships where status = ?";
 
         try {Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -37,8 +37,8 @@ public class GraphFriendSuggestion {
              ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int user1 = rs.getInt("user1_id");
-                int user2 = rs.getInt("user2_id");
+                int user1 = rs.getInt("user_id");
+                int user2 = rs.getInt("friend_id");
 
                 // if (!graph.containsKey(user1)) {
                 //    graph.put(user1, new ArrayList<>());

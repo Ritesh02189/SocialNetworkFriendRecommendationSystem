@@ -48,7 +48,7 @@ public class AddFriendController {
         }
 
         try {Connection conn = DBConnection.getConnection();
-            String sql = "INSERT INTO friendships (user1_id, user2_id, status) VALUES (?, ?, ?)";
+            String sql = "INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, ?)";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1, currentUserId);
             stmt.setInt(2, friendId);

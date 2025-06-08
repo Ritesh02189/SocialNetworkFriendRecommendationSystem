@@ -219,7 +219,7 @@ public class ManageUsersController implements Initializable {
                     deletePostLikesStmt.setInt(1, userId);
                     deletePostLikesStmt.executeUpdate();
 
-                    String deleteFriendshipsQuery = "DELETE FROM friendships WHERE user1_id = ? OR user2_id = ?";
+                    String deleteFriendshipsQuery = "DELETE FROM friendships WHERE user_id = ? OR friend_id = ?";
                     PreparedStatement deleteFriendshipsStmt = conn.prepareStatement(deleteFriendshipsQuery);
                     deleteFriendshipsStmt.setInt(1, userId);
                     deleteFriendshipsStmt.setInt(2, userId);

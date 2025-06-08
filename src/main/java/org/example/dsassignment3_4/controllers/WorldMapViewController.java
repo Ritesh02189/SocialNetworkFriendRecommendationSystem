@@ -17,51 +17,58 @@ public class WorldMapViewController implements Initializable {
     @FXML
     private WorldMapView worldMapView;
 
-    private  String selectedLocationName;
+    private String selectedLocationName;
 
     public static WorldMapViewController instance;
 
     public WorldMapViewController() {
         if (instance == null) {
             instance = this;
-        };
+        }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        worldMapView.setCountries(FXCollections.observableArrayList(WorldMapView.Country.PK));
-//        worldMapView.setZoomFactor(1.9);
+        // Show only India on the map
+        worldMapView.setCountries(FXCollections.observableArrayList(WorldMapView.Country.IN));
 
-        WorldMapView.Location punjab = new WorldMapView.Location("Punjab", 389, 72);
-        WorldMapView.Location sindh = new WorldMapView.Location("Sindh", 386, 69);
-        WorldMapView.Location kp = new WorldMapView.Location("KPK", 392, 70);
-        WorldMapView.Location balochistan = new WorldMapView.Location("Balochistan", 387, 64.5);
-        WorldMapView.Location gilgitBaltistan = new WorldMapView.Location("GB", 395, 73);
-        WorldMapView.Location azadKashmir = new WorldMapView.Location("Kashmir", 394, 75);
+        // Define locations using valid latitude and longitude
+        WorldMapView.Location punjab = new WorldMapView.Location("Punjab", 31.1471, 75.3412);
+        WorldMapView.Location uttarakhand = new WorldMapView.Location("Uttarakhand", 30.0668, 79.0193);
+        WorldMapView.Location delhi = new WorldMapView.Location("Delhi", 28.7041, 77.1025);
+        WorldMapView.Location gujarat = new WorldMapView.Location("Gujarat", 22.2587, 71.1924);
+        WorldMapView.Location mumbai = new WorldMapView.Location("Mumbai", 19.0760, 72.8777);
+        WorldMapView.Location bihar = new WorldMapView.Location("Bihar", 25.0961, 85.3131);
 
         ObservableList<WorldMapView.Location> locations = FXCollections.observableArrayList(
-                punjab, sindh, kp, balochistan, gilgitBaltistan, azadKashmir);
+                punjab, uttarakhand, delhi, gujarat, mumbai, bihar);
 
+        // Show locations on the map
         worldMapView.setShowLocations(true);
         worldMapView.setLocations(locations);
-        worldMapView.setTooltip(new Tooltip(locations.get(0).getName()));
 
+        // Optional: Show tooltip of the first location on hover
+        worldMapView.setTooltip(new Tooltip("Click on any city"));
+
+        // Handle click events
         worldMapView.setOnMouseClicked(event -> {
             ObservableList<WorldMapView.Location> selectedLocations = worldMapView.getSelectedLocations();
             ObservableList<WorldMapView.Country> countries = worldMapView.getSelectedCountries();
+
             if (!selectedLocations.isEmpty()) {
                 selectedLocationName = selectedLocations.get(0).getName();
                 UtilityMethods.showPopup("You selected: " + selectedLocationName);
                 Stage stage = (Stage) worldMapView.getScene().getWindow();
                 stage.close();
             }
-            if(!countries.isEmpty()) {
+
+            if (!countries.isEmpty()) {
                 UtilityMethods.showPopup("You selected: " + countries.get(0).getLocale().getDisplayName());
             }
-            });
+        });
     }
 
-    public  String getSelectedLocation() {
+    public String getSelectedLocation() {
         return selectedLocationName;
     }
 }

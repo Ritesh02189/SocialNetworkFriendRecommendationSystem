@@ -122,7 +122,7 @@ public class LoginController implements Initializable {
                 SessionManager.getInstance().setUserId(id);
                 SessionManager.getInstance().setUsername(username);
                 SessionManager.getInstance().setStatus(1);
-//                updateStatus(id);
+//              updateStatus(id);
                 SessionManager.getInstance().setAvatar(UserDAO.getUserAvatar(id));
                 System.out.println(username + "is logged in!"+ "has id " + id);
                 switchScene("Dashboard");

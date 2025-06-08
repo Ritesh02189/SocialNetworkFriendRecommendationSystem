@@ -22,13 +22,13 @@ public class GraphManager {
     }
 
     private void loadGraphFromDatabase() {
-        String query = "SELECT user1_id, user2_id FROM friendships WHERE status = 'ACCEPTED'";
+        String query = "SELECT user_id, friend_id FROM friendships WHERE status = 'ACCEPTED'";
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
             while (rs.next()) {
-                int user1 = rs.getInt("user1_id");
-                int user2 = rs.getInt("user2_id");
+                int user1 = rs.getInt("user_id");
+                int user2 = rs.getInt("friend_id");
                 graphModel.addEdge(user1, user2);
             }
         } catch (SQLException e) {
@@ -37,7 +37,7 @@ public class GraphManager {
     }
 
     public void sendFriendRequest(int fromUser, int toUser) {
-        String query = "INSERT INTO friendships (user1_id, user2_id, status) VALUES (?, ?, 'PENDING')";
+        String query = "INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, 'PENDING')";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, fromUser);
@@ -50,7 +50,7 @@ public class GraphManager {
     }
 
     public void acceptFriendRequest(int user1, int user2) {
-        String query = "UPDATE friendships SET status = 'ACCEPTED' WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+        String query = "UPDATE friendships SET status = 'ACCEPTED' WHERE (user_id = ? AND friend = ?) OR (user_id = ? AND friend_id = ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user1);
@@ -68,7 +68,7 @@ public class GraphManager {
     }
 
     public void removeFriend(int user1, int user2) {
-        String query = "DELETE FROM friendships WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+        String query = "DELETE FROM friendships WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, user1);

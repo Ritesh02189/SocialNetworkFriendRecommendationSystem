@@ -74,7 +74,8 @@ public class NotificationDialogController {
         notificationStack.clear();
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "SELECT content FROM notifications WHERE user_id = ? AND status = 'unread' ORDER BY created_at DESC";
+            String query = "SELECT content FROM notifications WHERE user_id = ? AND (is_read = 0 OR is_read IS NULL) ORDER BY created_at DESC";
+
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setInt(1, userId);
             ResultSet rs = stmt.executeQuery();

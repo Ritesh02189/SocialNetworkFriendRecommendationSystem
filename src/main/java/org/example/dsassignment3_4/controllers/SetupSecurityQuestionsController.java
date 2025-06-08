@@ -79,14 +79,22 @@ public class SetupSecurityQuestionsController implements Initializable {
             return;
         }
 
-        int question1 =  getQuestionId(question1Combo.getSelectionModel().getSelectedItem());
-        int question2 =  getQuestionId(question2Combo.getSelectionModel().getSelectedItem());
+        int question1 = getQuestionId(question1Combo.getSelectionModel().getSelectedItem());
+        int question2 = getQuestionId(question2Combo.getSelectionModel().getSelectedItem());
+
+        if(question1 == -1 || question2 == -1) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Question");
+            alert.setHeaderText("Security Question Not Found");
+            alert.setContentText("Please select valid security questions.");
+            alert.show();
+            return;
+        }
 
         saveToDatabase(userId, question1, answer1);
         saveToDatabase(userId, question2, answer2);
         UtilityMethods.showPopup("Questions Successfully Saved!");
     }
-
 
     private void saveToDatabase(int userId, int questionId, String answer) {
         try{

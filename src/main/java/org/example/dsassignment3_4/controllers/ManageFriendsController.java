@@ -137,11 +137,12 @@ public class ManageFriendsController {
         try {
             Connection connection = DBConnection.getConnection();
             String query = """
-                SELECT f.id, u1.username AS user1, u2.username AS user2, f.score, f.status, f.mutual_friends
-                FROM friendships f
-                JOIN users u1 ON f.user1_id = u1.id
-                JOIN users u2 ON f.user2_id = u2.id;
-            """;
+    SELECT f.id, u1.username AS user, u2.username AS user2, f.score, f.status, f.mutual_friends
+    FROM friendships f
+    JOIN users u1 ON f.user_id = u1.id
+    JOIN users u2 ON f.friend_id = u2.id;
+""";
+
             PreparedStatement stmt = connection.prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
 
@@ -178,7 +179,7 @@ public class ManageFriendsController {
         }
         try {
             Connection connection = DBConnection.getConnection();
-            String query = "INSERT INTO friendships (user1_id, user2_id, status, score, mutual_friends) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO friendships (user_id, friend_id, status, score, mutual_friends) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = connection.prepareStatement(query);
             stmt.setInt(1, user1ComboBox.getValue());
             stmt.setInt(2, user2ComboBox.getValue());
@@ -228,7 +229,7 @@ public class ManageFriendsController {
 
         try{
             Connection conn = DBConnection.getConnection();
-            String sql ="update friendships set status =? where user1_id =? and user2_id=?";
+            String sql ="update friendships set status =? where user_id =? and friend_id=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, user1Id);
             statement.setString(2, user2Id);

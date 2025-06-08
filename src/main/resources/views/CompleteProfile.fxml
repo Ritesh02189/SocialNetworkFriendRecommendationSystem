@@ -51,12 +51,12 @@
          </font>
       </Label>
       <ComboBox fx:id="educationComboBox" layoutX="410.0" layoutY="228.0" prefWidth="150.0" promptText="Education" />
-      <Label layoutX="340.0" layoutY="298.0" styleClass="label-white" text="Extra's:" textFill="WHITE">
+      <Label layoutX="340.0" layoutY="298.0" styleClass="label-white" text="Skill:" textFill="WHITE">
          <font>
             <Font size="16.0" />
          </font>
       </Label>
-      <ComboBox fx:id="extrasComboBox" layoutX="410.0" layoutY="287.0" prefWidth="150.0" promptText="Extra's" />
+      <ComboBox fx:id="SkillComboBox" layoutX="410.0" layoutY="287.0" prefWidth="150.0" promptText="Skill" />
       <Button fx:id="updateButton" layoutX="257.0" layoutY="354.0" mnemonicParsing="false" onAction="#handleUpdateAction" text="Update" textFill="WHITE">
          <font>
             <Font size="16.0" />

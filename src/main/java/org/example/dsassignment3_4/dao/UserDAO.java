@@ -124,7 +124,7 @@ public class UserDAO {
     public static void handleOnlineStatus(int userId){
         try {
             Connection conn = DBConnection.getConnection();
-            String sql = "update users set is_online = ? where user_id =?";
+            String sql = "update users set is_online = ? where id =?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setInt(1,1);
             stmt.setInt(2,userId);

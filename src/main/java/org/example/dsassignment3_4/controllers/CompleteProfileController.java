@@ -38,7 +38,7 @@ public class CompleteProfileController implements Initializable {
     @FXML
     private ComboBox<String> ageGroupComboBox;
     @FXML
-    private ComboBox<String> extrasComboBox;
+    private ComboBox<String> SkillComboBox;
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -58,11 +58,11 @@ public class CompleteProfileController implements Initializable {
         user_id = SessionManager.getInstance().getUserId();
         loadProfileDetails();
         ObservableList<String> choices = FXCollections.observableArrayList();
-        choices.addAll("Punjab", "Sindh", "KPK", "Balochistan", "GB", "Kashmir");
+        choices.addAll("Punjab", "BIHAR", "DELHI", "MUMBAI", "UK", "Kashmir");
         locationComboBox.setItems(choices);
 
         ObservableList<String> choices2 = FXCollections.observableArrayList();
-        choices2.addAll("Matric", "FSC", "O-LEVEL", "A-LEVEL", "BS", "MS", "PHD", "None", "Others");
+        choices2.addAll("10 th", "INTERMEDIATE","UG", "B-Tech", "MCA", "PHD" , "None", "Others");
         educationComboBox.setItems(choices2);
 
         ObservableList<String> choices3 = FXCollections.observableArrayList();
@@ -74,8 +74,8 @@ public class CompleteProfileController implements Initializable {
         ageGroupComboBox.setItems(choices4);
 
         ObservableList<String> choices5 = FXCollections.observableArrayList();
-        choices5.addAll("Animal-Lover", "Gardening","Food-Lover");
-        extrasComboBox.setItems(choices5);
+        choices5.addAll("Programming Languages", "Web Development","Database Management","Machine Learning and AI","Data Structures and Algorithms");
+        SkillComboBox.setItems(choices5);
 
         locationComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateProgressBar());
         educationComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> updateProgressBar());
@@ -108,7 +108,7 @@ public class CompleteProfileController implements Initializable {
         if (locationComboBox.getSelectionModel().getSelectedItem() != null) progress += 0.25;
         if (hobbiesComboBox.getSelectionModel().getSelectedItem() != null) progress += 0.25;
         if (educationComboBox.getSelectionModel().getSelectedItem() != null) progress += 0.25;
-        if (extrasComboBox.getSelectionModel().getSelectedItem() != null) progress += 0.05;
+        if (SkillComboBox.getSelectionModel().getSelectedItem() != null) progress += 0.05;
         progressBar.setProgress(progress);
 
         if(progress==1.0){
@@ -124,7 +124,7 @@ public class CompleteProfileController implements Initializable {
         String location = locationComboBox.getSelectionModel().getSelectedItem();
         String education = educationComboBox.getSelectionModel().getSelectedItem();
         String hobbies = hobbiesComboBox.getSelectionModel().getSelectedItem();
-        String extras = extrasComboBox.getSelectionModel().getSelectedItem();
+        String Skill = SkillComboBox.getSelectionModel().getSelectedItem();
 
         Integer age = null;
         if (ageGroup != null && !ageGroup.isEmpty()) {
@@ -137,9 +137,9 @@ public class CompleteProfileController implements Initializable {
 
 
         Connection conn = DBConnection.getConnection();
-        String query = "INSERT INTO completeProfile (user_id, age, location, education, hobbies, extras) " +
+        String query = "INSERT INTO completeProfile (user_id, age, location, education, hobbies, Skill) " +
                 "VALUES (?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE age = ?, location = ?, education = ?, hobbies = ?, extras = ?";
+                "ON DUPLICATE KEY UPDATE age = ?, location = ?, education = ?, hobbies = ?, Skill = ?";
 
         try {
             PreparedStatement statement = conn.prepareStatement(query);
@@ -150,14 +150,14 @@ public class CompleteProfileController implements Initializable {
             statement.setString(3, location);
             statement.setString(4, education);
             statement.setString(5, hobbies);
-            statement.setString(6, extras);
+            statement.setString(6, Skill);
 
             // update
             statement.setObject(7, age);
             statement.setString(8, location);
             statement.setString(9, education);
             statement.setString(10, hobbies);
-            statement.setString(11, extras);
+            statement.setString(11, Skill);
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -169,7 +169,7 @@ public class CompleteProfileController implements Initializable {
     public void loadProfileDetails() {
         try {
             Connection conn = DBConnection.getConnection();
-            String sql = "select age , location , education , hobbies , extras from completeProfile where user_id=?";
+            String sql = "select age , location , education , hobbies , Skill from completeProfile where user_id=?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setInt(1, user_id);
             ResultSet rs = statement.executeQuery();
@@ -178,13 +178,13 @@ public class CompleteProfileController implements Initializable {
                 String education = rs.getString("education");
                 String location = rs.getString("location");
                 String hobbies = rs.getString("hobbies");
-                String extras = rs.getString("extras");
+                String Skill = rs.getString("Skill");
 
                 ageGroupComboBox.setValue(String.valueOf(age));
                 educationComboBox.setValue(education);
                 locationComboBox.setValue(location);
                 hobbiesComboBox.setValue(hobbies);
-                extrasComboBox.setValue(extras);
+                SkillComboBox.setValue(Skill);
             }
 
         } catch (SQLException e) {

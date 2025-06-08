@@ -4,21 +4,21 @@ public class UserInfo extends User{
 
     private int age;
     private String location;
-    private String hobbies;
+    private String Skill;
     private String education;
 
-    public UserInfo(String username, int age, String location, String hobbies, String education) {
+    public UserInfo(String username, int age, String location, String Skill, String education) {
         super(username);
         this.age = age;
         this.location = location;
-        this.hobbies = hobbies;
+        this.Skill = Skill;
         this.education = education;
     }
 
     public UserInfo(int age, String location, String hobbies, String education) {
         this.age = age;
         this.location = location;
-        this.hobbies = hobbies;
+        this.Skill =Skill;
         this.education = education;
     }
 
@@ -30,8 +30,8 @@ public class UserInfo extends User{
         return location;
     }
 
-    public String getHobbies() {
-        return hobbies;
+    public String getSkill() {
+        return Skill;
     }
 
     public String getEducation() {

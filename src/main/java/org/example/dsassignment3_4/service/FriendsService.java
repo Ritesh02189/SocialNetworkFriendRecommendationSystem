@@ -19,8 +19,8 @@ public class FriendsService {
         String query = """
             SELECT u.username 
             FROM friendships f
-            JOIN users u ON (f.user1_id = u.id OR f.user2_id = u.id)
-            WHERE ? IN (f.user1_id, f.user2_id)
+            JOIN users u ON (f.user_id = u.id OR f.friend_id = u.id)
+            WHERE ? IN (f.user_id, f.friend_id)
               AND u.id != ?
               AND f.status = 'ACCEPTED'
         """;
@@ -28,6 +28,7 @@ public class FriendsService {
         try {PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, currentUserId);
             statement.setInt(2, currentUserId);
+            statement.setInt(3, currentUserId);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 friends.add(resultSet.getString("username"));
@@ -46,8 +47,8 @@ public class FriendsService {
         String query = """
             SELECT u.id, u.username 
             FROM friendships f
-            JOIN users u ON (f.user1_id = u.id OR f.user2_id = u.id)
-            WHERE ? IN (f.user1_id, f.user2_id)
+            JOIN users u ON (f.user_id = u.id OR f.friend_id = u.id)
+            WHERE ? IN (f.user_id, f.friend_id)
               AND u.id != ?
               AND f.status = 'ACCEPTED'
         """;
@@ -70,10 +71,10 @@ public class FriendsService {
     public Map<String, String[]> loadFriendConnections() {
         Map<String, ArrayList<String>> connectionsMap = new HashMap<>();
 
-        String query = "SELECT u1.username AS user1, u2.username AS user2 " +
+        String query = "SELECT u1.username AS user, u2.username AS friend " +
                 "FROM friendships f " +
-                "JOIN users u1 ON f.user1_id = u1.id " +
-                "JOIN users u2 ON f.user2_id = u2.id " +
+                "JOIN users u1 ON f.user_id = u1.id " +
+                "JOIN users u2 ON f.friend_id = u2.id " +
                 "WHERE f.status = 'ACCEPTED'";
 
         try {Connection conn = DBConnection.getConnection();
@@ -81,8 +82,8 @@ public class FriendsService {
              ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
-                String user1 = rs.getString("user1");
-                String user2 = rs.getString("user2");
+                String user1 = rs.getString("user");
+                String user2 = rs.getString("friend");
 
                 connectionsMap.putIfAbsent(user1, new ArrayList<>());
                 connectionsMap.putIfAbsent(user2, new ArrayList<>());
@@ -121,8 +122,8 @@ public class FriendsService {
         }
 
         try {Connection conn = DBConnection.getConnection();
-            String sql = "INSERT INTO friendships (user1_id, user2_id, status) VALUES (?, ?, ?)";
-            PreparedStatement stmt = conn.prepareStatement(sql);
+            String sql = "INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement( "INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, 'PENDING')");
             stmt.setInt(1, currentUserId);
             stmt.setInt(2, friendId);
             stmt.setString(3, "PENDING");
@@ -139,7 +140,7 @@ public class FriendsService {
 
     public List<String> getFriendRequests(int userId) throws SQLException {
         List<String> friendRequests = new ArrayList<>();
-        String query = "SELECT user1_id FROM friendships WHERE user2_id = ? AND status = 'PENDING'";
+        String query = "SELECT user_id FROM friendships WHERE friend_id = ? AND status = 'PENDING'";
 
         try {Connection connection = DBConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(query);
@@ -148,7 +149,7 @@ public class FriendsService {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                int user1Id = rs.getInt("user1_id");
+                int user1Id = rs.getInt("user_id");
                 String username = getUsernameById(user1Id);
                 friendRequests.add(username);
             }
@@ -160,7 +161,7 @@ public class FriendsService {
     }
 
     public void acceptFriendRequest(int receiverId, int senderId) throws SQLException {
-        String updateQuery = "UPDATE friendships SET status = 'ACCEPTED' WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+        String updateQuery = "UPDATE friendships SET status = 'ACCEPTED' WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
 
         try {Connection connection = DBConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(updateQuery);
@@ -175,7 +176,7 @@ public class FriendsService {
     }
 
     public void declineFriendRequest(int receiverId, int senderId) throws SQLException {
-        String updateQuery = "UPDATE friendships SET status = 'DECLINED' WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)";
+        String updateQuery = "UPDATE friendships SET status = 'DECLINED' WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)";
 
         try {Connection connection = DBConnection.getConnection();
              PreparedStatement stmt = connection.prepareStatement(updateQuery);
@@ -200,8 +201,8 @@ public class FriendsService {
 
     public int fetchTotalFriends(int userId) {
         int total = 0;
-        String query = "SELECT COUNT(*) AS total_friends FROM friendships WHERE status =? and user2_id =? " +
-                "or status =? and user1_id= ?;";
+        String query = "SELECT COUNT(*) AS total_friends FROM friendships WHERE status =? and friend_id =? " +
+                "or status =? and user_id= ?;";
 
         try {Connection connection = DBConnection.getConnection();
             PreparedStatement statement = connection.prepareStatement(query);

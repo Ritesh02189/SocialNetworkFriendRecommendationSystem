@@ -23,14 +23,20 @@ public class AdminDashboardController {
 
     @FXML
     private ListView<User> userListView;
+
     @FXML
     private Canvas graphCanvas;
+
     @FXML
     private Button showConnectionsButton;
 
     private Map<String, String[]> userConnections = new HashMap<>();
 
     public void initialize() throws SQLException {
+        // Set canvas background to white
+        graphCanvas.setStyle("-fx-background-color: white;");
+
+        // Load users and friends
         FriendsService friendshipService = new FriendsService();
         userConnections = friendshipService.loadFriendConnections();
         UserService userService = new UserService();
@@ -41,27 +47,29 @@ public class AdminDashboardController {
     }
 
     private void showConnections(ActionEvent event) {
-        if(userListView.getSelectionModel().getSelectedItem() ==null){
+        if (userListView.getSelectionModel().getSelectedItem() == null) {
             return;
         }
+
         String selectedUser = userListView.getSelectionModel().getSelectedItem().toString();
-        if (selectedUser == null) {
-            System.out.println("No user selected.");
-            return;
-        }
 
         GraphicsContext gc = graphCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, graphCanvas.getWidth(), graphCanvas.getHeight());
 
+        // Paint canvas white to override dark default
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, graphCanvas.getWidth(), graphCanvas.getHeight());
+
+        // Draw selected user
         drawUser(gc, selectedUser, 250, 200);
 
         String[] friends = userConnections.get(selectedUser);
         System.out.println(Arrays.toString(friends));
+
         if (friends != null) {
             double angleIncrement = 360.0 / friends.length;
 
             for (int i = 0; i < friends.length; i++) {
-
                 double angle = Math.toRadians(i * angleIncrement);
                 double radius = 150;
                 double friendX = 250 + radius * Math.cos(angle);
@@ -69,7 +77,7 @@ public class AdminDashboardController {
 
                 drawUser(gc, friends[i], friendX, friendY);
 
-                gc.setStroke(Color.WHITE);
+                gc.setStroke(Color.GRAY); // optional: use black or gray for better contrast
                 gc.setLineWidth(2);
                 gc.strokeLine(250, 200, friendX, friendY);
             }

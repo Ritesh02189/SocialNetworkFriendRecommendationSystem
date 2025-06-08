@@ -34,7 +34,7 @@ public class FindFriendsController {
     private JFXCheckBox locationCheckBox;
 
     @FXML
-    private JFXCheckBox hobbiesCheckBox;
+    private JFXCheckBox SkillCheckBox;
 
     @FXML
     private JFXCheckBox educationCheckBox;
@@ -65,7 +65,6 @@ public class FindFriendsController {
         friendsListView.setStyle(".list-cell:hover; -fx-background-color: #f0f0f0;");
 
     }
-
 
     @FXML
     private void handleFindButtonClick(ActionEvent event) {
@@ -99,7 +98,7 @@ public class FindFriendsController {
                         resultSet.getInt("age"),
                         resultSet.getString("location"),
                         resultSet.getString("education"),
-                        resultSet.getString("hobbies")
+                        resultSet.getString("Skill")
                 );
                 users.add(user);
             }
@@ -127,8 +126,8 @@ public class FindFriendsController {
         if (locationCheckBox.isSelected()) {
             preparedStatement.setString(paramIndex++, currentUser.getLocation());
         }
-        if (hobbiesCheckBox.isSelected()) {
-            preparedStatement.setString(paramIndex++,  "%" + currentUser.getHobbies() + "%");
+        if (SkillCheckBox.isSelected()) {
+            preparedStatement.setString(paramIndex++,  "%" + currentUser.getSkill() + "%");
         }
         if (educationCheckBox.isSelected()) {
             preparedStatement.setString(paramIndex++,  currentUser.getEducation());
@@ -139,7 +138,7 @@ public class FindFriendsController {
 
     private String buildQuery() {
         StringBuilder queryBuilder = new StringBuilder(
-                "SELECT u.username, cp.age, cp.location, cp.education, cp.hobbies " +
+                "SELECT u.username, cp.age, cp.location, cp.education, cp.Skill " +
                         "FROM users u " +
                         "JOIN completeProfile cp ON u.id = cp.user_id " +
                         "WHERE 1=1 "
@@ -151,8 +150,8 @@ public class FindFriendsController {
         if (locationCheckBox.isSelected()) {
             queryBuilder.append("AND cp.location = ? ");
         }
-        if (hobbiesCheckBox.isSelected()) {
-            queryBuilder.append("AND cp.hobbies LIKE ? ");
+        if (SkillCheckBox.isSelected()) {
+            queryBuilder.append("AND cp.Skill LIKE ? ");
         }
         if (educationCheckBox.isSelected()) {
             queryBuilder.append("AND cp.education = ? ");
@@ -163,8 +162,14 @@ public class FindFriendsController {
     }
 
     @FXML
+
     void addFriend(){
-        String username =friendsListView.getSelectionModel().getSelectedItem().getText();
+        Label selectedLabel = friendsListView.getSelectionModel().getSelectedItem();
+        if (selectedLabel == null) {
+            UtilityMethods.showPopupWarning("Please select a user from the list to add as a friend.");
+            return;
+        }
+        String username = selectedLabel.getText();
         handleAddFriend(username);
     }
 
@@ -182,7 +187,7 @@ public class FindFriendsController {
         }
         try {Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                     "INSERT INTO friendships (user1_id, user2_id, status) VALUES (?, ?, 'PENDING')");
+                     "INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, 'PENDING')");
             stmt.setInt(1, SessionManager.getInstance().getUserId());
             stmt.setInt(2, friendId);
             stmt.executeUpdate();
